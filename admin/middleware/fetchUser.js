@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: './.env.local' });
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || '1234567890$SECRETKEY';
 
 const fetchUser = (req, res, next) => {
     const token = req.header('auth-token');
@@ -11,7 +11,7 @@ const fetchUser = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        req.auther = decoded;
+        req.author = decoded;
         next();
     } catch (err) {
         return res.status(401).json({ error: "Invalid or expired token." });

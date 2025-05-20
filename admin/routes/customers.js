@@ -9,7 +9,7 @@ const { customerLoginValidation } = require('../validations/customerLoginValidat
 
 // Load environment variables
 require('dotenv').config({ path: "./.env.local" });
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || '1234567890$SECRETKEY';
 
 // create a new customer using POST "/customer/account/create"
 router.post('/create', customerCreateValidation, async (req, res) => {
@@ -47,6 +47,7 @@ router.post('/create', customerCreateValidation, async (req, res) => {
 // login a customer using POST "/customer/account/login"
 router.post('/login', customerLoginValidation , async (req, res) => {
     try {
+        console.log("Login request received");
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });

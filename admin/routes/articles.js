@@ -15,7 +15,7 @@ router.post("/create", fetchUser, articleValidation, async (req, res) => {
     }
 
     // extract the author from the request using auth token
-    req.body.author = req.user.id;
+    req.body.author = req.author.id;
     const { title, content, author, tags } = req.body;
 
     // Check if the article already exists
@@ -44,7 +44,7 @@ router.put("/edit/:id", fetchUser, articleValidation, async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const autherObjectId = req.auther.id;  // Extract the author ID from the request using auth token
+    const autherObjectId = req.author.id;  // Extract the author ID from the request using auth token
     const articleAuthorId = req.body.author;  // Extract the author ID from the request body
     if (autherObjectId !== articleAuthorId) {
         return res.status(401).json({ error: "Unauthorized access. Please log in as a valid customer to proceed." });
@@ -75,10 +75,10 @@ router.delete("/delete/:id", fetchUser, async (req, res) => {
         return res.status(404).json({ message: "Article not found" });
     }
     
-    const autherObjectId = req.auther.id;  // Extract the author ID from the request using auth token
+    const authorObjectId = req.author.id;  // Extract the author ID from the request using auth token
     const articleAuthorId = article.author.toString();  // Extract the author ID from the article
 
-    if (autherObjectId !== articleAuthorId) {
+    if (authorObjectId !== articleAuthorId) {
         return res.status(401).json({ error: "Unauthorized access. Please log in as a valid customer to proceed." });
     }
 
@@ -87,6 +87,17 @@ router.delete("/delete/:id", fetchUser, async (req, res) => {
         return res.status(200).json({ message: "Article deleted successfully" });
     } catch (error) {
         return res.status(500).json({ message: "Error deleting article", error });
+    }
+});
+
+// Get all articles of a user
+router.get("/getAll", fetchUser, async (req, res) => {
+    const userId = req.author.id;
+    try {
+        const articles = await Article.find({ author: userId });
+        return res.status(200).json({ message: "Articles fetched successfully", articles });
+    } catch (error) {
+        return res.status(500).json({ message: "Error fetching articles", error });
     }
 });
 
